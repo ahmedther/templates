@@ -1,0 +1,359 @@
+{% extends "HTMS_App/index.html" %} 
+
+{% block content %}
+
+{% load static %} 
+{% load custom_templates %}
+
+
+
+
+<link rel='stylesheet' href={% static 'HTMS_App/inventory.css' %}>
+
+  <section class="page">
+    <div class="sub-nav">
+        <div class="tick-header">
+            <h2>Inventory</h2>
+            
+              {% comment %} <a class='new-ticket-btn' href="{% url 'new_incident'%}{% if non_it %}?non_it=True{% endif %}" >
+                  <span class='btn--add btn--text'>Create Asset</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    class="bi bi-arrow-right-short btn--add btn--icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"
+                    />
+                    </svg
+                  >
+    
+              </a> {% endcomment %}
+            
+          </div>
+          
+
+          <form id='search-box-id' class = 'search-box' method='get'  action= "{% url 'inventory' %}"  >
+            <div class = 'submit_buttons'>
+            <button type='submit'><img  src={% static 'HTMS_App/search_icon.png' %} alt="Search Icon"></button>
+              <button type='submit'><img src="{% static 'HTMS_App/enter_key.png' %}" alt="Entery Key logo"></button>
+            </div>
+              <input autofocus class='search-box-input' type="text" name='search_asset' placeholder= 'Search Asset in Inventory...'
+              {%if search_asset %}
+              value={{ search_asset }}
+              {% endif %}
+              >
+      
+           </form>
+
+          <ul class='ticket-link-container'>
+            <li class='ticket-heading'><span>Assets Functions</span></li>
+            
+            <li class="ticket-links-listing
+            {% if link_active_status_all_assests%}
+            {{  link_active_status_all_assests}}
+            {% endif %}"
+            > 
+              <img src="{% static 'HTMS_App/inventory_all_logo.png' %}" alt="All Assest logo">
+              <a class='ticket-links' href={% url 'inventory' %}>
+                <span>All Assets Summary</span>
+              </a>
+            </li>
+
+            <li class="ticket-links-listing"> 
+              <img src="{% static 'HTMS_App/new_assest_logo.png' %}" alt="New Assest logo">
+              <a class='ticket-links' href="{% url 'new_assets' %}?arg=asset_creation">
+                <span>Create A New Asset</span>
+              </a>
+            </li>
+
+            <li class="ticket-links-listing" > 
+              <img src="{% static 'HTMS_App/add_product_logo.png' %}" alt="Add Assest logo">
+              <a class='ticket-links' href="{% url 'new_assets' %}?arg=quantity_addition">
+                <span>Add Quantity to an Asset</span>
+              </a>
+            </li>
+
+            <li class="ticket-links-listing" > 
+              <img src="{% static 'HTMS_App/bulk_icon.png' %}" alt="Add Assest logo">
+              <a class='ticket-links' href="{% url 'new_assets' %}?arg=bulk_quantity_addition">
+                <span>Add Quantity In Bulk</span>
+              </a>
+            </li>
+
+            <li class="ticket-links-listing" > 
+              <img src="{% static 'HTMS_App/scrap.png' %}" alt="Add Assest logo">
+              <a class='ticket-links' href="{% url 'new_assets' %}?arg=bulk_asset_scrap">
+                <span>Mark Assets As Scrap In Bulk</span>
+              </a>
+            </li>
+    
+    
+            {% if all_assets_heads %}
+            <li class='ticket-heading'><span>All Assets</span></li>
+            {% for asset in all_assets_heads %}
+            <li class="ticket-links-listing
+            {% if asset.asset_name == active_link %}
+            {{  link_active_status }}
+            {% endif %}
+            ">
+              {% comment %} <img src="{% static 'HTMS_App/asset' %}{{random_number}}.png" alt="Open Sign icon logo">
+              <a class='ticket-links' href="?asset_id={{asset.id}}">
+                <span>{{asset.asset_name|title}}</span>
+              </a> {% endcomment %}
+              <img src="{{asset.image_url}}"alt="dynamic  logo">
+              <a class="ticket-links" href="?asset_id={{asset.id}}">
+                <span>{{asset.asset_name|title}}</span>
+              </a>
+            </li>
+            {% endfor %}
+            {% endif %}
+
+          </ul>
+        
+    </div>
+
+
+    
+        <div class="ticket-main">
+        {% block new_assets %}{% endblock %}
+        <div class="ticket-main-header">
+            
+            <span class='all-ticket' >
+            
+            {% if header %}
+            {{ header|title }}
+            {% endif %}
+            </span>
+
+        </div>
+        
+        {% if error %}
+        <section class='error-container'>
+            <img src="{% static 'HTMS_App/error.svg' %}" alt="Error Logo" class="error-logo">
+
+            <ul>
+            <li><h3 class="error-text">{{error.0|title}} </h3></li>
+            <li><h3 class="error-text">{{error.1|title}}   </h3></li>
+            </ul>
+            
+            
+        </section>
+        {% endif %}
+
+
+        {% if asset_objects %}
+        <div class="asset-rows asset-main-header">
+          <div class='asset-main-name'>
+            <div class="asset-main-name-cont">
+              <span class="asset-main-name--name">Asset Name</span> 
+              <span class='asset-main-name--band'>Brand Name</span>
+            </div>
+          </div>
+  
+          <div class="asset-main-model-name">
+            <div class="asset-main-name-cont">
+              <span class="asset-main-name--name">Model Name</span> 
+              <span class='asset-main-name--band'>Model Number</span>
+              <span class='asset-main-name--band'>Serial Number</span>
+            </div>
+          </div>
+  
+  
+          <div class="asset-main-status">
+            <div class="asset-main-name-cont">
+              <span class="asset-main-name--name">Current Status</span> 
+              <span class='asset-main-name--band'>( Facility )</span>
+            </div>
+          </div>
+  
+  
+          <div class="asset-main-assest-user">
+            Assest User
+          </div>
+  
+  
+          <div class="asset-main-ticket-assigned">
+            Assign To Ticket Number
+          </div>
+  
+          <div class="asset-main-dates">
+            <div class="asset-main-dates-cont">
+              <span class="asset-main-dates--dop">Date Of Purchase</span> 
+              <span class='asset-main-dates--doa'>Date Added</span>
+            </div>
+          </div>
+
+        </div>  
+
+
+
+
+
+      
+      
+      {% for asset in asset_objects %}
+      
+      <a href="{% url 'update_asset' asset.id %}" data-id="{{ asset.id }}" class="asset-rows">
+        <div class='asset-name-container'>
+          <div class="requester-profile-photo">
+            {% comment %} <div class="requester-profile-text">
+              {{ asset.asset_name.asset_name.0 |title }}
+            </div> {% endcomment %}
+            <img src="  {{ asset.asset_name.image_url}}" alt="{{ asset.asset_name.asset_name |title }} Logo">
+          </div>
+          <div class="requester-profile-name-container">
+            <div class="requester-profile-name">{{ asset.asset_name.asset_name |title }}</div>
+            <div class="requester-profile-pr_numer">{{ asset.brand }}</div>
+          </div>
+        </div>
+
+        <div class="asset-model-name">
+          <ul class="asset-model-cont">
+            {% if asset.model_name %}
+            <img  src="{% static 'HTMS_App/bullet.png' %}" alt="Bullet Logo"></li>
+            <li class="asset-model-name--name">{{ asset.model_name }}</li>
+            {% endif %}
+            <img src="{% static 'HTMS_App/bullet.png' %}" alt="Bullet Logo"></li>
+            <li class="asset-model-name--number">{{ asset.model_number }}</li>
+            <img  src="{% static 'HTMS_App/bullet.png' %}" alt="Bullet Logo"></li>
+            <li class="asset-model-name--serial">{{ asset.serial_number }}</li>
+          </ul>
+        </div>
+
+
+        <div class="asset-status ">
+          <ul class="asset-cont">
+            <li class="asset-name--name">{{ asset.current_status |title|default:''|remove_dashes }}</li>
+            <li class="asset-name--number">( {{ asset.facility }} )</li>
+          </ul>
+        </div>
+
+
+        
+        <div class='asset-user'>
+          {% if asset.asset_user.id %}
+          <div class="requester-profile-photo">
+            <div class="requester-profile-text">
+              {{ asset.asset_user.first_name.0 |title }}
+            </div>
+          </div>
+
+          <div class="requester-profile-name-container">
+            <div class="requester-profile-name">{{ asset.asset_user.first_name |title }} {{ asset.asset_user.last_name |title }}</div>
+            <div class="requester-profile-pr_numer">{{ asset.asset_user.technician.pr_number }}</div>
+            <div class="requester-profile-pr_numer">{{ asset.asset_user.technician.department }}</div>
+          </div>
+          {% else %}
+          <div class="requester-profile-photo">
+            <img class="image-invert"src="{% static 'HTMS_App/no-entry.png'%}" alt="Block User Logo">
+          </div>
+
+          <div class="requester-profile-name-container">
+            <div class="requester-profile-name">Not Assigned To A User</div>
+            <div class="requester-profile-pr_numer"></div>
+            <div class="requester-profile-pr_numer">{{ asset.asset_user.technician.department }}</div>
+          </div>
+          {% endif %}
+
+        </div>
+        
+        
+        <div class="asset-assign-ticket-number">
+            <ul class="asset-assign-ticket-number-cont">
+              {% if asset.asset_user.id %}
+              <li class="asset-assign-ticket-number-cont--ticket-id">{{ asset.assign_to_ticket.id  }}</li>
+              <li class="divider">-</li>
+              <li class="aasset-assign-ticket-number-cont--subject">{{asset.assign_to_ticket.subject|title }}</li>
+              {% else %}
+              <li class="asset-assign-ticket-number-cont--ticket-id"><img class="image-invert-2"src="{% static 'HTMS_App/box_prohibited_1.png'%}" alt="Block User Logo"></li>
+              <li class="divider">-</li>
+              <li class="aasset-assign-ticket-number-cont--subject">Not Assigned To A Ticket</li>
+              {% endif %}
+            </ul>
+        </div>  
+          
+         
+        
+
+        <div class="asset-purchase-added-dates">
+          <ul class='asset-purchase-added-dates--container'>
+            <li class="asset-purchase-label--purchase-date">Purchase &nbsp;:</li>
+            <li class="asset-purchase--purchase-date">{{ asset.date_of_purchase|date:"d-M-Y"   }}</li>
+            <li class="asset-purchase-label--added-date">Added &nbsp;:</li>
+            <li class="asset-purchase--added-date">{{ asset.date_added|date:"d-M-Y"   }}</li>
+          </ul>
+        </div>
+
+
+      </a>
+
+      {% endfor %}
+      {% endif %}
+
+      {% if asset_objects.has_other_pages %}
+
+      <div class="paginator-container">
+
+          <ul class='paginator-ui'>
+            {% if asset_objects.has_previous %}
+            <a class='paginator-previous pagi-link' href="?{{page_href}}&page={{asset_objects.previous_page_number}}">
+              <li class="paginator-link">
+                <img src={% static 'HTMS_App/arrow.png' %} alt="Arror Icon">
+                <span>Prev</span> 
+              </li>
+            </a>
+            {%endif%}
+            
+              {% for page in custom_page_range %}
+              <a class="paginator-page-number pagi-link
+              {% if page == asset_objects.number %}
+              page-active
+              {%  endif %}"  
+              href="?{{page_href}}&page={{page}}"
+              > 
+                <li class='paginator-link '>{{ page }}</li>
+              </a>
+              {% endfor %}
+
+              {% if asset_objects.has_next %}
+              <a class='paginator-next pagi-link'  href="?{{page_href}}&page={{asset_objects.next_page_number}}" >
+                <li class="paginator-link">
+                <span>Next</span>  
+                <img src={% static 'HTMS_App/arrow.png' %} alt="Arror Icon">
+               </li>
+              </a>
+              {% endif%}
+
+            
+            {% comment %} page-active {% endcomment %}
+           
+          </ul>
+
+      </div>
+
+      {% endif %}
+
+
+        
+        
+        
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+  </section>
+
+
+
+{% endblock %} 
